@@ -13,8 +13,9 @@ import java.util.List;
 public class HBaseUtil {
     /**
      * 创建表
+     *
      * @param tableName 创建表的表名称
-     * @param cfs 列簇的集合
+     * @param cfs       列簇的集合
      * @return
      */
     public static boolean createTable(String tableName, String[] cfs) {
@@ -25,7 +26,7 @@ public class HBaseUtil {
                 return false;
             }
             HTableDescriptor tableDescriptor = new HTableDescriptor(TableName.valueOf(tableName));
-            for (String cf:cfs) {
+            for (String cf : cfs) {
                 HColumnDescriptor columnDescriptor = new HColumnDescriptor(cf);
                 columnDescriptor.setMaxVersions(1);
                 tableDescriptor.addFamily(columnDescriptor);
@@ -39,18 +40,19 @@ public class HBaseUtil {
 
     /**
      * 删除表
+     *
      * @param tableName 表名称
      * @return
      */
-    public static boolean deleteTable(String tableName){
+    public static boolean deleteTable(String tableName) {
         TableName tn = TableName.valueOf(tableName);
-        try(HBaseAdmin admin = (HBaseAdmin)HBaseConn.getHBaseConn().getAdmin()){
-            if (!admin.tableExists(tn)){
+        try (HBaseAdmin admin = (HBaseAdmin) HBaseConn.getHBaseConn().getAdmin()) {
+            if (!admin.tableExists(tn)) {
                 return false;
             }
             admin.disableTable(tn);
             admin.deleteTable(tn);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return true;
@@ -58,6 +60,7 @@ public class HBaseUtil {
 
     /**
      * 插入数据
+     *
      * @param tableName
      * @param rowkey
      * @param cfName
@@ -65,27 +68,28 @@ public class HBaseUtil {
      * @param data
      * @return
      */
-    public static boolean putRow(String tableName,String rowkey,String cfName,String qualifer,String data){
-        try(Table table = HBaseConn.getTable(tableName)){
+    public static boolean putRow(String tableName, String rowkey, String cfName, String qualifer, String data) {
+        try (Table table = HBaseConn.getTable(tableName)) {
             Put put = new Put(Bytes.toBytes(rowkey));
-            put.addColumn(Bytes.toBytes(cfName),Bytes.toBytes(qualifer),Bytes.toBytes(data));
+            put.addColumn(Bytes.toBytes(cfName), Bytes.toBytes(qualifer), Bytes.toBytes(data));
             table.put(put);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return true;
     }
 
     /**
-     *批量出入数据
+     * 批量出入数据
+     *
      * @param tableName
      * @param puts
      * @return
      */
-    public static boolean putRows(String tableName, List<Put> puts){
-        try(Table table = HBaseConn.getTable(tableName)){
+    public static boolean putRows(String tableName, List<Put> puts) {
+        try (Table table = HBaseConn.getTable(tableName)) {
             table.put(puts);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return true;
@@ -93,19 +97,21 @@ public class HBaseUtil {
 
     /**
      * 查询单条数据
+     *
      * @param tableName
      * @param rowkey
      * @param cfName
      * @param qualifer
      * @return
      */
-    public static Result getRow(String tableName, String rowkey, String cfName, String qualifer){
-        try( Table table = HBaseConn.getTable(tableName)){
+    public static Result getRow(String tableName, String rowkey, String cfName, String qualifer) {
+        try (Table table = HBaseConn.getTable(tableName)) {
             Get get = new Get(Bytes.toBytes(rowkey));
             get.addColumn(Bytes.toBytes(cfName), Bytes.toBytes(qualifer));
             return table.get(get);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
     }
+}

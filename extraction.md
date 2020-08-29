@@ -9,7 +9,10 @@ hive> CREATE TABLE train (
   goods int,
   start_station int,
   end_station int,
-  train_time timestamp)
+  train_time timestamp,
+  year int,
+  month int,
+  day int)
 ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS TEXTFILE;
 ```
 
@@ -18,7 +21,7 @@ sqoop导入
 $ sqoop import \
 --connect jdbc:mysql://localhost:3306/hue_pre \
 --username hue -P \
---table train_test \
+--table train_test2 \
 --fields-terminated-by ',' \
 --delete-target-dir \
 --num-mappers 1 \
@@ -49,6 +52,11 @@ ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS TEXTFILE;
 hive> LOAD DATA local INPATH '/home/hadoop/DBGenerator/train_100.csv' into table test1.train_raw;
 ```
 
+使用LOAD命令将hdfs中的csv数据导入的命令为
+```bash
+hive> LOAD DATA INPATH '/user/1219test/train_100.csv' into table test1.train_raw;
+```
+
 创建sql脚本transform.sql处理日期格式，进行导入（已放入131相应目录）
 ```bash
 -- transform.sql
@@ -60,7 +68,10 @@ insert into train select
     goods,
     start_station,
     end_station,
-    cast (concat(substr(year, 2), '-', substr(month, 2), '-', substr(day, 2), ' 00:00:00') as timestamp)
+    cast (concat(substr(year, 2), '-', substr(month, 2), '-', substr(day, 2), ' 00:00:00') as timestamp),
+    year,
+    month,
+    day
 from train_raw;
 ```
 

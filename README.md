@@ -138,3 +138,15 @@ select hour_time, sum(alarm_number) as alarm_numbers from (select cast(date_form
 group by hour_time order by hour_time;
 ```
 ![avatar](image/queryByHour.png)
+
+为加快展示速度，将结果提前存入临时表中，使用hue中以下三个saved query创建结果临时表
+
+- Create table for result of query by station
+- Create table for result of query by alarm type and level
+- Create table for result of query by hour
+
+已经创建表后，使用以下三个saved query查看结果
+
+- Query alarm by station
+- Query alarm by alarm type and level
+- Query alarm by hour in one day
